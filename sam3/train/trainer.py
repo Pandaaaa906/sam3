@@ -117,6 +117,8 @@ class CheckpointConf:
     initialize_after_preemption: Optional[bool] = None
     # if not None, training will be resumed from this checkpoint
     resume_from: Optional[str] = None
+    export_model: Optional[bool] = False
+    export_name: Optional[str] = "sam3_ft.pt"
 
     def infer_missing(self):
         if self.initialize_after_preemption is None:
@@ -376,6 +378,15 @@ class Trainer:
 
         for checkpoint_path in checkpoint_paths:
             self._save_checkpoint(checkpoint, checkpoint_path)
+
+        # export model only
+        if self.checkpoint_conf.export_model and isinstance(self.checkpoint_conf.export_name, str):
+            export_fp = os.path.join(checkpoint_folder, self.checkpoint_conf.export_name)
+            export_state_dict = {("detector." + k): v for k, v in state_dict.items()}
+            self._save_checkpoint(
+                {"model": export_state_dict},
+                export_fp,
+            )
 
     def _save_checkpoint(self, checkpoint, checkpoint_path):
         """

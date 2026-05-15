@@ -426,6 +426,8 @@ trainer:
   checkpoint:
     save_dir: ${launcher.experiment_log_dir}/checkpoints
     save_freq: 0  # 0 only last checkpoint is saved.
+    export_model: False
+    export_name: "sam3_ft.pt"
 
   logging:
     tensorboard_writer:
